@@ -23,6 +23,7 @@ def handle_thread_started(
     set_suggested_prompts: SetSuggestedPrompts,
 ) -> None:
     """Set up initial suggested prompts when a user opens the assistant."""
+    logger.info("[ASSISTANT] thread_started event received")
     set_suggested_prompts(
         prompts=[
             {
@@ -54,6 +55,7 @@ def handle_user_message(
     context: BoltContext,
 ) -> None:
     """Handle incoming user messages in the assistant thread."""
+    logger.info(f"[ASSISTANT] user_message event received: {payload.get('text', '')[:80]}")
     try:
         channel_id = payload["channel"]
         thread_ts = payload["thread_ts"]
