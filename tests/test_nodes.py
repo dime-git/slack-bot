@@ -158,8 +158,7 @@ class TestHandleSQLRequest:
                 thread_history=[record],
             )
         )
-        assert "SELECT COUNT" in result["response"]
-        assert "```sql" in result["response"]
+        assert "SELECT COUNT" in result["sql_snippet"]
 
     def test_multiple_queries_matches_by_similarity(self):
         records = [
@@ -182,5 +181,4 @@ class TestHandleSQLRequest:
                 thread_history=records,
             )
         )
-        # Should match the first query about apps
-        assert "COUNT(DISTINCT app_name)" in result["response"]
+        assert "COUNT(DISTINCT app_name)" in result["sql_snippet"]

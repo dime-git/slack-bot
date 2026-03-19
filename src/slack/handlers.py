@@ -82,6 +82,7 @@ def handle_user_message(
             "result_columns": [],
             "response": "",
             "csv_data": "",
+            "sql_snippet": "",
             "error": "",
         }
 
@@ -110,6 +111,17 @@ def handle_user_message(
                 filename="query_results.csv",
                 title="Query Results Export",
                 initial_comment=result.get("response", "Here's your CSV export."),
+            )
+        # Handle SQL Code Snippet upload
+        elif result.get("sql_snippet"):
+            client.files_upload_v2(
+                channel=channel_id,
+                thread_ts=thread_ts,
+                content=result["sql_snippet"],
+                filename="query.sql",
+                title="SQL Query",
+                snippet_type="sql",
+                initial_comment=result.get("response", "Here's the SQL query:"),
             )
         else:
             say(result.get("response", "I couldn't generate a response. Please try again."))

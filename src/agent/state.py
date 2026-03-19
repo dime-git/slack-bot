@@ -18,4 +18,5 @@ class AgentState(TypedDict):
     result_columns: list[str]
     response: str
     csv_data: str  # prepared CSV string for file upload
+    sql_snippet: str  # raw SQL for Code Snippet upload
     error: str

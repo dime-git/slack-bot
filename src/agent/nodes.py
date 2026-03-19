@@ -288,7 +288,10 @@ def handle_sql_request(state: AgentState) -> dict:
     # Single query — just return it
     if len(history) == 1:
         sql = history[0]["sql"]
-        return {"response": f"Here's the SQL query I used:\n\n```sql\n{sql}\n```"}
+        return {
+            "response": f"Here's the SQL query I used:",
+            "sql_snippet": sql,
+        }
 
     # Multiple queries — extract the topic from the request and find the best match
     user_msg = state["user_message"].lower()
@@ -307,5 +310,6 @@ def handle_sql_request(state: AgentState) -> dict:
     question = record["question"]
     sql = record["sql"]
     return {
-        "response": f"For the question: _{question}_\n\nHere's the SQL I used:\n\n```sql\n{sql}\n```"
+        "response": f"For the question: _{question}_\n\nHere's the SQL I used:",
+        "sql_snippet": sql,
     }
