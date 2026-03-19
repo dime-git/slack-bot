@@ -3,7 +3,6 @@
 import csv
 import io
 import re
-from difflib import SequenceMatcher
 
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
@@ -235,9 +234,50 @@ def handle_csv_export(state: AgentState) -> dict:
     }
 
 
+_SQL_REQUEST_PREFIXES = [
+    "show me the sql you used to retrieve",
+    "show me the sql you used to get",
+    "show me the sql you used for",
+    "show me the sql for",
+    "show the sql for",
+    "what sql did you use to",
+    "what query did you use to",
+    "show me the query for",
+    "sql you used to retrieve",
+    "sql you used to get",
+    "sql you used for",
+    "query you used for",
+    "sql for",
+    "query for",
+]
+
+_STOP_WORDS = {
+    "the", "a", "an", "how", "many", "what", "which", "show", "me",
+    "do", "we", "have", "is", "are", "i", "you", "your", "our", "for",
+    "to", "of", "in", "and", "or", "all", "get", "retrieve", "find",
+    "give", "tell", "used", "about", "with", "that", "this", "from",
+}
+
+
+def _extract_query_topic(user_msg: str) -> str:
+    """Strip SQL-request prefix phrases to isolate the topic being referenced."""
+    for prefix in _SQL_REQUEST_PREFIXES:
+        if prefix in user_msg:
+            return user_msg.replace(prefix, "").strip()
+    return user_msg
+
+
+def _keyword_overlap(text1: str, text2: str) -> float:
+    """Jaccard similarity on meaningful (non-stop) words."""
+    words1 = {w for w in text1.split() if w not in _STOP_WORDS}
+    words2 = {w for w in text2.split() if w not in _STOP_WORDS}
+    if not words1 or not words2:
+        return 0.0
+    return len(words1 & words2) / len(words1 | words2)
+
+
 def handle_sql_request(state: AgentState) -> dict:
-    """Show the SQL query used for a previous question. No LLM call
-    unless disambiguation is needed among multiple cached queries."""
+    """Show the SQL query used for a previous question. No LLM call."""
     history = state.get("thread_history", [])
 
     if not history:
@@ -250,23 +290,20 @@ def handle_sql_request(state: AgentState) -> dict:
         sql = history[0]["sql"]
         return {"response": f"Here's the SQL query I used:\n\n```sql\n{sql}\n```"}
 
-    # Multiple queries — try to match by string similarity
+    # Multiple queries — extract the topic from the request and find the best match
     user_msg = state["user_message"].lower()
-    best_match_idx = -1
-    best_score = 0.0
+    topic = _extract_query_topic(user_msg)
+
+    best_match_idx = len(history) - 1  # default to most recent
+    best_score = -1.0
 
     for i, record in enumerate(history):
-        score = SequenceMatcher(None, user_msg, record["question"].lower()).ratio()
+        score = _keyword_overlap(topic, record["question"].lower())
         if score > best_score:
             best_score = score
             best_match_idx = i
 
-    # If similarity is decent, use that match. Otherwise default to last query.
-    if best_score > 0.3:
-        record = history[best_match_idx]
-    else:
-        record = history[-1]
-
+    record = history[best_match_idx]
     question = record["question"]
     sql = record["sql"]
     return {

@@ -63,7 +63,7 @@ Built with:
 
 ```bash
 # Clone the repo
-git clone <repo-url>
+git clone https://github.com/dime-git/slack-bot
 cd slack-bot
 
 # Install dependencies
