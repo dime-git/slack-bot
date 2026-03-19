@@ -5,7 +5,7 @@ import io
 import re
 from difflib import SequenceMatcher
 
-from langchain_anthropic import ChatAnthropic
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from pydantic import BaseModel, Field
 
@@ -13,8 +13,7 @@ from src.agent.state import AgentState
 from src.database.connection import execute_query
 from src.database.schema import SCHEMA_DESCRIPTION
 
-# Use Sonnet for cost efficiency — strong enough for text-to-SQL
-llm = ChatAnthropic(model="claude-sonnet-4-20250514", temperature=0)
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 # ── Pydantic models for structured LLM output ──────────────────────────
 

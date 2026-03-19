@@ -25,7 +25,7 @@ User message → classify_intent (keywords) → generate_sql (LLM) → validate_
 
 Built with:
 - **LangGraph** for agent orchestration
-- **Claude (Anthropic)** for LLM
+- **OpenAI GPT-4o-mini** for LLM
 - **Slack Bolt** with AI Assistant API
 - **SQLite** for data storage
 - **LangSmith** for observability
@@ -74,7 +74,7 @@ cp .env.example .env
 # Edit .env with your tokens:
 #   SLACK_BOT_TOKEN=xoxb-...
 #   SLACK_APP_TOKEN=xapp-...
-#   ANTHROPIC_API_KEY=sk-ant-...
+#   OPENAI_API_KEY=sk-...
 #   LANGSMITH_API_KEY=lsv2_... (optional, for tracing)
 ```
 
