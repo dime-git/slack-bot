@@ -73,9 +73,11 @@ def classify_intent(state: AgentState) -> dict:
 
     # Check for SQL display request
     sql_patterns = ["show sql", "show me the sql", "show the sql",
-                    "what sql", "which sql", "the query you used",
+                    "what sql", "what is the sql", "what's the sql",
+                    "which sql", "the query you used",
                     "what query", "show me the query", "see the query",
-                    "sql statement", "sql you used"]
+                    "sql statement", "sql you used", "you used to query",
+                    "used to retrieve", "used to get the", "used to fetch"]
     if any(p in msg for p in sql_patterns):
         return {"intent": "sql"}
 
@@ -162,9 +164,10 @@ Rules:
 4. If assumptions were made about the query, note them briefly.
 5. If there are more than 20 rows, show only the top 20 and add a note: "_Showing top 20 results. Say 'export as csv' for the full dataset._"
 6. Use Slack mrkdwn formatting: *bold*, `code`, ```code blocks```.
-7. For currency values, format with $ and 2 decimal places.
-8. For large numbers, use comma separators (e.g., 1,234,567).
-9. Keep your response concise — no unnecessary preamble."""
+7. IMPORTANT: Slack does NOT support language tags in code blocks. Use plain ``` without any language identifier. Never write ```plaintext, ```sql, ```csv, or any other tag — just ```.
+8. For currency values, format with $ and 2 decimal places.
+9. For large numbers, use comma separators (e.g., 1,234,567).
+10. Keep your response concise — no unnecessary preamble."""
 
 
 def format_response(state: AgentState) -> dict:

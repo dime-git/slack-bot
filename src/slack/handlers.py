@@ -91,6 +91,12 @@ def handle_user_message(
         # Invoke the LangGraph agent
         result = agent_graph.invoke(initial_state)
 
+        logger.info(f"[AGENT] intent={result.get('intent')} | sql={result.get('sql_query') or 'none'}")
+        logger.info(f"[AGENT] sql_snippet={'YES ('+str(len(result.get('sql_snippet','')))+ ' chars)' if result.get('sql_snippet') else 'none'}")
+        logger.info(f"[AGENT] csv_data={'YES' if result.get('csv_data') else 'none'}")
+        logger.info(f"[AGENT] response={result.get('response', '')[:120]}")
+        logger.info(f"[AGENT] error={result.get('error') or 'none'}")
+
         # Cache the query if a new SQL query was executed
         if result.get("sql_query") and result.get("query_result") is not None:
             thread_cache.setdefault(thread_ts, []).append(
@@ -101,9 +107,11 @@ def handle_user_message(
                     result_columns=result.get("result_columns", []),
                 )
             )
+            logger.info(f"[CACHE] stored query #{len(thread_cache[thread_ts])} for thread {thread_ts}")
 
         # Handle CSV file upload
         if result.get("csv_data"):
+            logger.info("[RESPONSE] uploading CSV file")
             client.files_upload_v2(
                 channel=channel_id,
                 thread_ts=thread_ts,
@@ -112,22 +120,25 @@ def handle_user_message(
                 title="Query Results Export",
                 initial_comment=result.get("response", "Here's your CSV export."),
             )
+            logger.info("[RESPONSE] CSV upload done")
         # Handle SQL Code Snippet upload
         elif result.get("sql_snippet"):
+            logger.info(f"[RESPONSE] uploading SQL snippet: {result['sql_snippet']}")
             client.files_upload_v2(
                 channel=channel_id,
                 thread_ts=thread_ts,
                 content=result["sql_snippet"],
                 filename="query.sql",
                 title="SQL Query",
-                snippet_type="sql",
                 initial_comment=result.get("response", "Here's the SQL query:"),
             )
+            logger.info("[RESPONSE] SQL snippet upload done")
         else:
+            logger.info("[RESPONSE] sending text message")
             say(result.get("response", "I couldn't generate a response. Please try again."))
 
     except Exception as e:
-        logger.error(f"Error handling message: {traceback.format_exc()}")
+        logger.error(f"[ERROR] {traceback.format_exc()}")
         say(f"Sorry, something went wrong: {str(e)}\n\nPlease try again.")
 
 
