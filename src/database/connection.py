@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from src.config import DATABASE_PATH
 
@@ -7,6 +8,7 @@ _connection: sqlite3.Connection | None = None
 def get_connection() -> sqlite3.Connection:
     global _connection
     if _connection is None:
+        os.makedirs(os.path.dirname(DATABASE_PATH) or ".", exist_ok=True)
         _connection = sqlite3.connect(DATABASE_PATH, check_same_thread=False)
         _connection.row_factory = sqlite3.Row
     return _connection

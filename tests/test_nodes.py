@@ -18,6 +18,7 @@ def _make_state(**overrides) -> AgentState:
         "result_columns": [],
         "response": "",
         "csv_data": "",
+        "sql_snippet": "",
         "error": "",
     }
     state.update(overrides)
