@@ -61,10 +61,15 @@ Built with:
 
 ### 2. Set Up Environment
 
+**Requires Python 3.10+** (uses modern type hints like `list[dict]` and `X | None` syntax).
+
 ```bash
 # Clone the repo
 git clone https://github.com/dime-git/slack-bot
 cd slack-bot
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -86,7 +91,7 @@ python -m src.app
 ```
 
 The bot will:
-1. Create the SQLite database with schema
+1. Auto-create the `data/` directory and SQLite database
 2. Seed ~3,600 rows of sample analytics data
 3. Connect to Slack via Socket Mode
 
