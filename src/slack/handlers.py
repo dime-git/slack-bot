@@ -1,6 +1,7 @@
 """Slack AI Assistant event handlers."""
 
 import logging
+import re
 import traceback
 
 from slack_bolt import Assistant, BoltContext, Say, SetStatus, SetSuggestedPrompts
@@ -59,7 +60,7 @@ def handle_user_message(
     try:
         channel_id = payload["channel"]
         thread_ts = payload["thread_ts"]
-        user_message = payload["text"]
+        user_message = _strip_mrkdwn(payload["text"])
 
         set_status("Analyzing your question...")
 
@@ -140,6 +141,14 @@ def handle_user_message(
     except Exception as e:
         logger.error(f"[ERROR] {traceback.format_exc()}")
         say(f"Sorry, something went wrong: {str(e)}\n\nPlease try again.")
+
+
+def _strip_mrkdwn(text: str) -> str:
+    """Remove Slack mrkdwn formatting so the LLM sees plain text."""
+    text = re.sub(r'[*_~`]', '', text)
+    text = re.sub(r'<([^|>]+)\|([^>]+)>', r'\2', text)  # <url|label> -> label
+    text = re.sub(r'<([^>]+)>', r'\1', text)  # <url> -> url
+    return text.strip()
 
 
 def _fetch_thread_messages(

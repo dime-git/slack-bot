@@ -52,13 +52,15 @@ Rules:
 1. Only generate SELECT statements. Never generate INSERT, UPDATE, DELETE, DROP, or any other modifying statement.
 2. Use proper SQLite syntax (e.g., strftime for date functions).
 3. If the user asks a follow-up question, use the conversation history to understand context.
-4. If the question is not related to app analytics, mobile apps, revenue, installs, or the data in this database, set is_off_topic to true and provide a polite decline message.
+4. ONLY set is_off_topic to true if the question is CLEARLY unrelated to apps, analytics, revenue, installs, costs, countries, or platforms (e.g., "what's the weather?", "tell me a joke"). When in doubt, ALWAYS attempt to generate a SQL query. Questions like "how many apps do we have" or "list all apps" are valid — answer them using the database.
 5. When the user mentions "revenue" without specifying, assume they mean total revenue (in_app_revenue + ads_revenue).
 6. When the user mentions "profit" or "ROI", calculate as (in_app_revenue + ads_revenue - ua_cost).
 7. Country codes in the database are two-letter codes (US, UK, DE, etc.). If the user mentions a full country name, map it to the code.
 8. For "popularity", use total installs as the metric.
 9. Always include descriptive column aliases in your queries (e.g., AS total_revenue, AS app_count).
-10. If comparing time periods, be explicit about the date ranges."""
+10. If comparing time periods, be explicit about the date ranges.
+11. IMPORTANT: Prefer aggregated summaries over raw data dumps. When the user asks for "statistics", "overview", "full list", or "everything", generate a query that aggregates metrics (SUM, COUNT, AVG) grouped by app_name — NOT a SELECT * that returns thousands of raw rows. Keep results concise and meaningful.
+12. Limit the number of columns to what's essential for readability (aim for 5-6 columns max). For example, a good app summary would include: app_name, total_installs, total_revenue, total_cost, and profit."""
 
 
 def classify_intent(state: AgentState) -> dict:
