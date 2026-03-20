@@ -131,6 +131,6 @@ The seed script generates realistic data for 12 mobile apps across iOS/Android, 
 
 ## LangSmith
 
-Set `LANGSMITH_TRACING=true` and `LANGSMITH_API_KEY` in your `.env` to enable full tracing. Every LangGraph node and LLM call is automatically traced via `langchain-anthropic`.
+Set `LANGSMITH_TRACING=true` and `LANGSMITH_API_KEY` in your `.env` to enable full tracing. Every LangGraph node and LLM call is automatically traced via `langchain-openai`.
 
 View traces at [smith.langchain.com](https://smith.langchain.com).

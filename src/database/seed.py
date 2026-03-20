@@ -1,7 +1,7 @@
 """Generate realistic sample data for the Rounds app portfolio."""
 
 import random
-from datetime import date, timedelta
+from datetime import date
 
 from src.database.connection import get_connection
 from src.database.schema import create_tables
