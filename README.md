@@ -95,9 +95,18 @@ The bot will:
 2. Seed ~3,600 rows of sample analytics data
 3. Connect to Slack via Socket Mode
 
+You should see this in the terminal when it's running successfully:
+```
+INFO: Initializing database...
+INFO: Starting Rounds Analytics Bot (Socket Mode)...
+⚡️ Bolt app is running!
+```
+
+On first run you'll also see `Seeded 3600 rows into app_analytics.` — subsequent runs skip seeding automatically.
+
 ### 4. Use
 
-Open your Slack workspace → click the **AI Assistant** icon in the top nav or sidebar → start asking questions:
+In Slack, click the sparkle icon (✨) in the top-right or find **Rounds Analytics** under **Apps** in the sidebar. Open a thread and start asking questions:
 
 - "How many apps do we have?"
 - "Which country generates the most revenue?"
