@@ -148,3 +148,39 @@ The seed script generates realistic data for 12 mobile apps across iOS/Android, 
 Set `LANGSMITH_TRACING=true` and `LANGSMITH_API_KEY` in your `.env` to enable full tracing. Every LangGraph node and LLM call is automatically traced via `langchain-openai`.
 
 View traces at [smith.langchain.com](https://smith.langchain.com).
+
+## Further Development
+
+A detailed roadmap is available in [`docs/ROADMAP.md`](docs/ROADMAP.md). Key areas:
+
+### Security Measures
+
+- **User-level access permissions** — Map Slack user IDs to permission tiers (viewer, analyst, admin) to restrict sensitive data queries (e.g., UA cost, revenue) to authorized roles
+- **SQL safety hardening** — Enforce read-only database connections at the DB level (`?mode=ro`), add query timeout limits, and implement row-count caps
+- **Audit logging** — Log every query with user ID, timestamp, SQL, and result summary for compliance and debugging
+- **Data privacy** — PII detection in results before sending to Slack, configurable column-level access control
+
+### Upcoming Features
+
+- **Data visualization** — Auto-generate charts (bar, line, trend) via matplotlib and upload as images to Slack threads when a visualization is more useful than a table
+- **Scheduled reports** — Recurring queries delivered to channels on a schedule (e.g., "weekly revenue summary every Monday at 9am")
+- **Proactive alerts** — Threshold-based notifications (e.g., "alert if any app's revenue drops 20%+ week-over-week") and anomaly detection on key metrics
+- **Enhanced query intelligence** — Suggested follow-up questions, query templates via slash commands, and "did you mean?" disambiguation
+- **Multi-source data** — Connect to multiple databases (analytics, CRM, finance) with cross-source joins and a data catalog
+
+### Production Readiness (Prioritized)
+
+| Priority | Improvement |
+|----------|-------------|
+| **P0** | Replace in-memory cache with Redis for thread state (survives restarts) |
+| **P0** | Graceful error recovery for LLM timeouts, rate limits, and DB failures |
+| **P0** | Read-only database connection enforced at the DB level |
+| **P0** | Health check endpoint for uptime monitoring |
+| **P0** | Structured JSON logging with request IDs |
+| **P1** | Connection pooling via SQLAlchemy for PostgreSQL migration |
+| **P1** | Per-user rate limiting to prevent LLM API abuse |
+| **P1** | Prompt versioning for A/B testing and rollback |
+| **P1** | Token usage tracking and cost alerts per user/query type |
+| **P2** | Query result caching (Redis TTL) for identical queries |
+| **P2** | Docker + docker-compose for one-command deployment |
+| **P2** | CI/CD pipeline with automated tests and linting |
